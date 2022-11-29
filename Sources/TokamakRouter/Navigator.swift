@@ -13,7 +13,7 @@ import JavaScriptKit
 final class Navigator: ObservableObject {
 	// MARK: - Properties.
 	@Published private(set) var historyStack: [String]
-	@Published private(set) var forwardStack: [String]
+	@Published private(set) var forwardStack: [String] = []
 
 	private let initialHash: String
 	private let location: JSObject
@@ -21,7 +21,7 @@ final class Navigator: ObservableObject {
 	private var onHashChanged: JSClosure!
 
 	// MARK: - Computed properties.
-	@Published var currentHash: String {
+	var currentHash: String {
 		return historyStack.last ?? initialHash
 	}
 
@@ -31,6 +31,7 @@ final class Navigator: ObservableObject {
 	/// - Parameter initialHash: The initial location hash.
 	init(initialHash: String = "") {
 		self.initialHash = initialHash
+		historyStack = [initialHash]
 		location = JSObject.global.location.object!
 		window = JSObject.global.window.object!
 

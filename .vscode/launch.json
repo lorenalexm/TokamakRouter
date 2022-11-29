@@ -1,0 +1,22 @@
+{
+	"configurations": [
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug TokamakRouter",
+			"program": "${workspaceFolder:TokamakRouter}/.build/debug/TokamakRouter",
+			"args": [],
+			"cwd": "${workspaceFolder:TokamakRouter}",
+			"preLaunchTask": "swift: Build Debug TokamakRouter"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Release TokamakRouter",
+			"program": "${workspaceFolder:TokamakRouter}/.build/release/TokamakRouter",
+			"args": [],
+			"cwd": "${workspaceFolder:TokamakRouter}",
+			"preLaunchTask": "swift: Build Release TokamakRouter"
+		}
+	]
+}

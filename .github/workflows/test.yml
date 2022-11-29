@@ -1,4 +1,4 @@
-name: Test with SwiftWasm
+name: Carton Test
 
 on:
   pull_request:

@@ -16,9 +16,8 @@ public final class Navigator: ObservableObject {
 	@Published private(set) var forwardStack: [String] = []
 
 	private let initialHash: String
-	private let location: JSObject
-	private let window: JSObject
-	private var onHashChanged: JSClosure!
+	private let location: JSObject?
+	private let window: JSObject?
 
 	// MARK: - Computed properties.
 	var currentHash: String {
@@ -26,32 +25,38 @@ public final class Navigator: ObservableObject {
 	}
 
 	// MARK: - Initializer.
-	/// Sets the initial and current hash values.
+	/// Sets the `initialHash` and `historyStack` values.
 	/// Configures a closure to observe `.onhashchange` events.
 	/// - Parameter initialHash: The initial location hash.
-	init(initialHash: String = "") {
+	/// - Parameter jsInteropSkipped: Should the interop configuration with `JavaScriptKit` be skipped?
+	private init(initialHash: String = "", jsInteropSkipped: Bool = false) {
 		self.initialHash = initialHash
 		historyStack = [initialHash]
-		location = JSObject.global.location.object!
-		window = JSObject.global.window.object!
 
-		let onHashChanged = JSClosure { [unowned self] _ in
-			let hash = self.location["hash"].string!
-
-			guard hash != currentHash else {
-				return .undefined
+		if !jsInteropSkipped {
+			guard let location = JSObject.global.location.object,
+			let window = JSObject.global.window.object else {
+				fatalError("🛑 TokamakRouter: Unable to obtain Location or Window reference from JavaScriptKit!")
 			}
+			self.location = location
+			self.window = window
 
-			self.historyStack.append(hash)
-			return .undefined
+			configureJSWindowEvents()
+		} else {
+			location = nil
+			window = nil
 		}
-		window.onhashchange = .object(onHashChanged)
-		self.onHashChanged = onHashChanged
+	}
+
+	/// Sets the `initialHash` value.
+	/// - Parameter initialHash: The initial location hash.
+	public convenience init(initialHash: String = "") {
+		self.init(initialHash: initialHash, jsInteropSkipped: false)
 	}
 
 	/// Removes the `.onhashchange` observer closure.
 	deinit {
-		window.onhashchange = .undefined
+		window?.onhashchange = .undefined
 	}
 
 	// MARK: - Functions.
@@ -105,7 +110,31 @@ public final class Navigator: ObservableObject {
 	/// Sets the location hash to the given string.
 	/// - Parameter hash: Value of the new hash.
 	private func setLocationHash(to hash: String) {
+		guard let location = self.location else {
+			return
+		}
 		location["hash"] = .string(hash)
+	}
+
+	/// Configuration for `JavaScriptKit` interop with the window object.
+	private func configureJSWindowEvents() {
+		let onHashChanged = JSClosure { [unowned self] _ in
+			guard let location = self.location,
+			let newHash = location["hash"].string else {
+				return .undefined
+			}
+
+			guard newHash != currentHash else {
+				#if DEBUG
+				print("⚠️ TokamakRouter: New hash equals the current hash, no action taken.")
+				#endif
+				return .undefined
+			}
+
+			self.historyStack.append(newHash)
+			return .undefined
+		}
+		window?.onhashchange = .object(onHashChanged)
 	}
 }
 
@@ -113,6 +142,32 @@ extension Navigator: Equatable {
 	public static func ==(lhs: Navigator, rhs: Navigator) -> Bool {
 		return lhs === rhs
 	}
+}
+
+// MARK: - Testing extensions.
+extension Navigator {
+	#if DEBUG
+	// Initializes the `Navigator` forcing configuration of `JavaScriptKit` items to be skipped.
+	internal convenience init() {
+		self.init(initialHash: "", jsInteropSkipped: true)
+	}
+
+	/// This function should *only* be used within testing.
+	/// Navigates to a new location, does nothing if attempting to navigate to the same hash.
+	/// - Parameter hash: Hash of the new location to navigate to.
+	/// - Parameter forceAddHistory: Should this function push to the `historyStack`.
+	internal func navigate(to hash: String, forceAddHistory: Bool = false) {
+		guard hash != currentHash else {
+			return
+		}
+
+		forwardStack.removeAll()
+		if forceAddHistory == true {
+			historyStack.append(hash)
+		}
+		setLocationHash(to: hash)
+	}
+	#endif
 }
 
 #endif

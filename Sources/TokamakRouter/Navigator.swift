@@ -10,7 +10,7 @@
 import TokamakDOM
 import JavaScriptKit
 
-final class Navigator: ObservableObject {
+public final class Navigator: ObservableObject {
 	// MARK: - Properties.
 	@Published private(set) var historyStack: [String]
 	@Published private(set) var forwardStack: [String] = []
@@ -57,7 +57,7 @@ final class Navigator: ObservableObject {
 	// MARK: - Functions.
 	/// Navigates to a new location, does nothing if attempting to navigate to the same hash.
 	/// - Parameter hash: Hash of the new location to navigate to.
-	func navigate(to hash: String) {
+	public func navigate(to hash: String) {
 		guard hash != currentHash else {
 			return
 		}
@@ -69,7 +69,7 @@ final class Navigator: ObservableObject {
 	/// Attempts to navigate a given number of steps backwards in history.
 	/// The steps are clamped to the `historyStack.count`.
 	/// - Parameter steps: Number of steps back in history to go.
-	func navigateBackwards(by steps: Int) {
+	public func navigateBackwards(by steps: Int = 1) {
 		guard historyStack.count > 1 else {
 			return
 		}
@@ -84,7 +84,7 @@ final class Navigator: ObservableObject {
 	/// Attempts to navigate a given number of steps forwards in history.
 	/// The steps are clamped to the `forwardStack.count`.
 	/// - Parameter steps: 
-	func navigateForwards(by steps: Int) {
+	public func navigateForwards(by steps: Int = 1) {
 		guard !forwardStack.isEmpty else {
 			return
 		}
@@ -97,7 +97,7 @@ final class Navigator: ObservableObject {
 	}
 
 	/// Clears the forwards history. Sets the backwards history to current hash.
-	func clearHistory() {
+	public func clearHistory() {
 		forwardStack.removeAll()
 		historyStack = [currentHash]
 	}

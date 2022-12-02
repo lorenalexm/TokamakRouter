@@ -5,9 +5,7 @@
 // Created by Alex Loren on 11/29/22.
 //
 
-#if os(WASI)
-
-import TokamakDOM
+import TokamakShim
 import JavaScriptKit
 
 public final class Navigator: ObservableObject {
@@ -169,5 +167,3 @@ extension Navigator {
 	}
 	#endif
 }
-
-#endif

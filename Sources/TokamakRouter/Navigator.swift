@@ -154,6 +154,12 @@ extension Navigator {
 		self.init(initialHash: "", jsInteropSkipped: true)
 	}
 
+	/// Initializes the `Navigator` forcing configuration of `JavaScriptKit` items to be skipped.
+	/// - Parameter hash: The hash to set as the `initialHash` for testing.
+	internal convenience init(hash: String) {
+		self.init(initialHash: hash, jsInteropSkipped: true)
+	}
+
 	/// This function should *only* be used within testing.
 	/// Navigates to a new location, does nothing if attempting to navigate to the same hash.
 	/// - Parameter hash: Hash of the new location to navigate to.

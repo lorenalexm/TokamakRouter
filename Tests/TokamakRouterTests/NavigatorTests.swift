@@ -35,6 +35,13 @@ final class NavigatorTests: XCTestCase {
 		XCTAssertEqual(clone, navigator)
 	}
 
+	func testNavigatorInitialHash() {
+		let navigatorChangedHash = Navigator(hash: "foo")
+		XCTAssertNotEqual(navigator, navigatorChangedHash)
+		XCTAssertEqual(navigatorChangedHash.currentHash, "foo")
+		XCTAssertEqual(navigatorChangedHash.historyStack.count, 1)
+	}
+
 	func testNavigateTo() {
 		navigator.navigate(to: "foo", forceAddHistory: true)
 		XCTAssertEqual(navigator.historyStack.count, 2)

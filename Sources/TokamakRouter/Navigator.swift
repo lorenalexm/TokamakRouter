@@ -44,6 +44,10 @@ public final class Navigator: ObservableObject {
 			location = nil
 			window = nil
 		}
+
+		if !initialHash.isEmpty {
+			setLocationHash(to: initialHash)
+		}
 	}
 
 	/// Sets the `initialHash` value.

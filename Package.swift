@@ -2,7 +2,7 @@
 import PackageDescription
 let package = Package(
     name: "TokamakRouter",
-	platforms: [.macOS(.v11)],
+	platforms: [.macOS(.v12), .iOS(.v14)],
     products: [
         .library(name: "TokamakRouter", targets: ["TokamakRouter"])
     ],

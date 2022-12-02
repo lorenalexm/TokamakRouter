@@ -60,6 +60,12 @@ final class NavigatorTests: XCTestCase {
 		XCTAssertEqual(navigator.currentHash, "bar")
 	}
 
+	func testNavigatingBackwardsWithNoHistory() {
+		let currentHash = navigator.currentHash
+		navigator.navigateBackwards(by: 12)
+		XCTAssertEqual(navigator.currentHash, currentHash)
+	}
+
 	func testNavigateForwards() {
 		navigator.navigate(to: "foo", forceAddHistory: true)
 		navigator.navigate(to: "bar", forceAddHistory: true)
@@ -74,6 +80,12 @@ final class NavigatorTests: XCTestCase {
 		navigator.navigateForwards()
 		XCTAssertEqual(navigator.historyStack.count, 3)
 		XCTAssertEqual(navigator.currentHash, "bar")
+	}
+
+	func testNavigatingForwardsWithNoHistory() {
+		let currentHash = navigator.currentHash
+		navigator.navigateForwards(by: 12)
+		XCTAssertEqual(navigator.currentHash, currentHash)
 	}
 
 	func testClearHistory() {

@@ -33,13 +33,21 @@ public final class Navigator: ObservableObject {
 
 		if !jsInteropSkipped {
 			guard let location = JSObject.global.location.object,
-			let window = JSObject.global.window.object else {
+			let window = JSObject.global.window.object,
+			let providedHash = location["hash"].string else {
 				fatalError("🛑 TokamakRouter: Unable to obtain Location or Window reference from JavaScriptKit!")
 			}
 			self.location = location
 			self.window = window
 
 			configureJSWindowEvents()
+
+			if !providedHash.isEmpty {
+				#if DEBUG
+				print("⚠️ TokamakRouter: Received a hash from the browser request, resetting to empty.")
+				#endif
+				location["hash"] = .string("")
+			}
 		} else {
 			location = nil
 			window = nil

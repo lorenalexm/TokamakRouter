@@ -118,22 +118,35 @@ public final class Navigator: ObservableObject {
 		location["hash"] = .string(hash)
 	}
 
+	/// Removes the '#' only if the string begins with it.
+	/// - Parameter hash: A string to potentially remove the prefixed hash from.
+	/// - Returns: The trimmed string, or original if was not prefixed with a '#'.
+	private func removeHashSymbol(from hash: String) -> String {
+		var toBeTrimmed = hash
+		if toBeTrimmed.first == "#" {
+			toBeTrimmed.removeFirst()
+		}
+		return toBeTrimmed
+	}
+
 	/// Configuration for `JavaScriptKit` interop with the window object.
 	private func configureJSWindowEvents() {
 		let onHashChanged = JSClosure { [unowned self] _ in
 			guard let location = self.location,
-			let newHash = location["hash"].string else {
+			let hash = location["hash"].string else {
 				return .undefined
 			}
+			
+			let trimmedHash = removeHashSymbol(from: hash)
 
-			guard newHash != currentHash else {
+			guard trimmedHash != currentHash else {
 				#if DEBUG
 				print("⚠️ TokamakRouter: New hash equals the current hash, no action taken.")
 				#endif
 				return .undefined
 			}
 
-			self.historyStack.append(newHash)
+			self.historyStack.append(trimmedHash)
 			return .undefined
 		}
 		window?.onhashchange = .object(onHashChanged)

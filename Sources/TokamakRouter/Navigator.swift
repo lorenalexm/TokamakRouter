@@ -66,6 +66,9 @@ public final class Navigator: ObservableObject {
 	/// - Parameter hash: Hash of the new location to navigate to.
 	public func navigate(to hash: String) {
 		guard hash != currentHash else {
+			#if DEBUG
+			print("⚠️ TokamakRouter: New hash equals the current hash, no action taken.")
+			#endif
 			return
 		}
 
